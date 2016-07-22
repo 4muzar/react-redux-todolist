@@ -59,6 +59,21 @@ const todoApp = combineReducers({
 });
 const store = createStore(todoApp);
 
+const Todo = ({todo}) => {
+    return (
+        <li onClick={() => {
+            store.dispatch({
+                type: 'TOGGLE_TODO',
+                id: todo.id
+            });
+        }}>
+            <span style={{
+                textDecoration: todo.completed ? 'line-through' : ''
+            }}>{todo.text}</span>
+        </li>
+    );
+};
+
 let todoID = 0;
 class TodoApp extends Component {
     render() {
@@ -77,9 +92,7 @@ class TodoApp extends Component {
                 </button>
                 <ul>
                     {store.getState().todos.map(todo =>
-                        <li key={todo.id}>
-                            {todo.text}
-                        </li>
+                        <Todo key={todo.id} todo={todo} />
                     )}
                 </ul>
             </div>
