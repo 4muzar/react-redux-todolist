@@ -1,3 +1,6 @@
+import { Component } from 'react';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { combineReducers, createStore } from 'redux';
 
 const todo = (state = {}, action) => {
@@ -54,15 +57,44 @@ const todoApp = combineReducers({
     todos,
     visibilityFilter
 });
-
 const store = createStore(todoApp);
 
-store.subscribe(() => {
-    console.log(store.getState());
-});
+let todoID = 0;
+class TodoApp extends Component {
+    render() {
+        return (
+            <div>
+                <input ref={(node) => this.input = node}/>
+                <button onClick={() => {
+                    store.dispatch({
+                        type: 'ADD_TODO',
+                        text: this.input.value,
+                        id: todoID++
+                    });
+                    this.input.value = '';
+                }}>
+                    add todo
+                </button>
+                <ul>
+                    {store.getState().todos.map(todo =>
+                        <li key={todo.id}>
+                            {todo.text}
+                        </li>
+                    )}
+                </ul>
+            </div>
+        );
+    }
+}
 
-store.dispatch({
-    type: 'ADD_TODO',
-    id: 0,
-    text: 'gogogo'
+const render = () => {
+    ReactDOM.render(
+        <TodoApp/>,
+        document.querySelector('#root')
+    );
+};
+
+store.subscribe(() => {
+    render();
 });
+render();
