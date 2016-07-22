@@ -35,7 +35,7 @@ const todos = (state = [], action) => {
         case 'REMOVE_TODO':
             return [
                 ...state.slice(0, action.id),
-                ...state.slice(action.id + 1),
+                ...state.slice(action.id + 1)
             ];
         case 'TOGGLE_TODO':
             return state.map(t => todo(t, action));
@@ -59,20 +59,32 @@ const todoApp = combineReducers({
 });
 const store = createStore(todoApp);
 
-const Todo = ({todo}) => {
-    return (
-        <li onClick={() => {
-            store.dispatch({
-                type: 'TOGGLE_TODO',
-                id: todo.id
-            });
-        }}>
-            <span style={{
-                textDecoration: todo.completed ? 'line-through' : ''
-            }}>{todo.text}</span>
-        </li>
-    );
-};
+const Todo = ({
+    text,
+    completed,
+    onclick
+}) => (
+    <li onClick={onclick}>
+        <span style={{
+            textDecoration: completed ? 'line-through' : ''
+        }}>{text}</span>
+    </li>
+);
+
+const TodoList = ({
+    todos,
+    onTodoClick
+}) => (
+    <ul>
+        {todos.map(todo =>
+            <Todo
+                key={todo.id}
+                {...todo}
+                onclick={() => onTodoClick(todo.id)}
+            />
+        )}
+    </ul>
+);
 
 const FilterLink = ({
     filter,
@@ -84,7 +96,7 @@ const FilterLink = ({
     }
 
     return (
-        <a href="" onClick={(e) => {
+        <a href="#" onClick={(e) => {
             e.preventDefault();
             store.dispatch({
                 type: 'SET_VISIBILITY_FILTER',
@@ -132,11 +144,15 @@ class TodoApp extends Component {
                 }}>
                     add todo
                 </button>
-                <ul>
-                    {visibleTodos.map(todo =>
-                        <Todo key={todo.id} todo={todo} />
-                    )}
-                </ul>
+                <TodoList
+                    todos={visibleTodos}
+                    onTodoClick={(todoId) => {
+                        store.dispatch({
+                            type: 'TOGGLE_TODO',
+                            id: todoId
+                        });
+                    }}
+                />
                 <FilterLink filter="SHOW_ALL" currentFilter={currentFilter}>
                     all
                 </FilterLink>
