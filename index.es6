@@ -74,9 +74,51 @@ const Todo = ({todo}) => {
     );
 };
 
+const FilterLink = ({
+    filter,
+    currentFilter,
+    children
+}) => {
+    if (currentFilter === filter) {
+        return <span>{children}</span>;
+    }
+
+    return (
+        <a href="" onClick={(e) => {
+            e.preventDefault();
+            store.dispatch({
+                type: 'SET_VISIBILITY_FILTER',
+                value: filter
+            });
+        }}>
+            {children}
+        </a>
+    );
+};
+
+const getVisibleTodos = ({todos, currentFilter}) => {
+    return todos.filter((todo) => {
+        switch (currentFilter) {
+            case "SHOW_ALL":
+                return todo;
+            case "SHOW_ACTIVE":
+                return !todo.completed;
+            case "SHOW_COMPLETED":
+                return todo.completed;
+        }
+    });
+};
+
 let todoID = 0;
 class TodoApp extends Component {
     render() {
+        const { todos } = store.getState();
+        const currentFilter = store.getState().visibilityFilter;
+        const visibleTodos = getVisibleTodos({
+            todos,
+            currentFilter
+        });
+
         return (
             <div>
                 <input ref={(node) => this.input = node}/>
@@ -91,10 +133,21 @@ class TodoApp extends Component {
                     add todo
                 </button>
                 <ul>
-                    {store.getState().todos.map(todo =>
+                    {visibleTodos.map(todo =>
                         <Todo key={todo.id} todo={todo} />
                     )}
                 </ul>
+                <FilterLink filter="SHOW_ALL" currentFilter={currentFilter}>
+                    all
+                </FilterLink>
+                {', '}
+                <FilterLink filter="SHOW_ACTIVE" currentFilter={currentFilter}>
+                    active
+                </FilterLink>
+                {', '}
+                <FilterLink filter="SHOW_COMPLETED" currentFilter={currentFilter}>
+                    completed
+                </FilterLink>
             </div>
         );
     }
