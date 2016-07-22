@@ -1,3 +1,3 @@
-const obj = { a: 6 };
-const { a } = obj;
-console.log(a);
+const obj = { b: 6 };
+const { b } = obj;
+console.log(b);
