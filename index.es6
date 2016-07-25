@@ -59,22 +59,26 @@ const todoApp = combineReducers({
 });
 const store = createStore(todoApp);
 
-const AddTodo = ({
-    onClick
-}) => {
+let todoID = 0;
+const AddTodo = () => {
     let input;
-
+    
     return (
         <div>
             <input ref={(node) => input = node}/>
             <button onClick={() => {
-                onClick(input.value);
+                store.dispatch({
+                    type: 'ADD_TODO',
+                    text: input.value,
+                    id: todoID++
+                });
                 input.value = '';
             }}>
                 add todo
             </button>
         </div>
     );
+
 };
 
 const Todo = ({
@@ -103,6 +107,58 @@ const TodoList = ({
         )}
     </ul>
 );
+
+class VisibleTodoList extends Component {
+
+    state = {
+        todos: store.getState().todos,
+        visibilityFilter: store.getState().visibilityFilter
+    };
+
+    componentDidMount() {
+        this.unsubscribe = store.subscribe(() => {
+            this.setState({
+                todos: store.getState().todos,
+                visibilityFilter: store.getState().visibilityFilter
+            });
+        });
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    render() {
+        const visibleTodos = this.getVisibleTodos(todos);
+
+        return (
+            <TodoList
+                todos={visibleTodos}
+                onTodoClick={(todoId) => {
+                    store.dispatch({
+                        type: 'TOGGLE_TODO',
+                        id: todoId
+                    });
+                }}
+            />
+        );
+    }
+
+    getVisibleTodos () {
+        const { todos, visibilityFilter } = this.state;
+
+        return todos.filter((todo) => {
+            switch (visibilityFilter) {
+                case "SHOW_ALL":
+                    return todo;
+                case "SHOW_ACTIVE":
+                    return !todo.completed;
+                case "SHOW_COMPLETED":
+                    return todo.completed;
+            }
+        });
+    }
+}
 
 const Link = ({
     active,
@@ -181,59 +237,15 @@ const Footer = () => (
     </div>
 );
 
-const getVisibleTodos = ({todos, visibilityFilter}) => {
-    return todos.filter((todo) => {
-        switch (visibilityFilter) {
-            case "SHOW_ALL":
-                return todo;
-            case "SHOW_ACTIVE":
-                return !todo.completed;
-            case "SHOW_COMPLETED":
-                return todo.completed;
-        }
-    });
-};
-
-let todoID = 0;
-const TodoApp = ({
-    todos,
-    visibilityFilter
-}) => (
+const TodoApp = () => (
     <div>
-        <AddTodo onClick={(text) => {
-            store.dispatch({
-                type: 'ADD_TODO',
-                text: text,
-                id: todoID++
-            });
-        }}/>
-        <TodoList
-            todos={getVisibleTodos({
-                todos,
-                visibilityFilter
-            })}
-            onTodoClick={(todoId) => {
-                store.dispatch({
-                    type: 'TOGGLE_TODO',
-                    id: todoId
-                });
-            }}
-        />
+        <AddTodo />
+        <VisibleTodoList />
         <Footer />
     </div>
 );
 
-
-const render = () => {
-    ReactDOM.render(
-        <TodoApp
-            {...store.getState()}
-        />,
-        document.querySelector('#root')
-    );
-};
-
-store.subscribe(() => {
-    render();
-});
-render();
+ReactDOM.render(
+    <TodoApp />,
+    document.querySelector('#root')
+);
