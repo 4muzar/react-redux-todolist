@@ -1,18 +1,22 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import TodoList from './../components/todo-list';
 
 class VisibleTodoList extends Component {
+    
+    static contextTypes = {
+        store: PropTypes.object  
+    };
 
     state = {
-        todos: this.props.store.getState().todos,
-        visibilityFilter: this.props.store.getState().visibilityFilter
+        todos: this.context.store.getState().todos,
+        visibilityFilter: this.context.store.getState().visibilityFilter
     };
 
     componentDidMount() {
-        this.unsubscribe = this.props.store.subscribe(() => {
+        this.unsubscribe = this.context.store.subscribe(() => {
             this.setState({
-                todos: this.props.store.getState().todos,
-                visibilityFilter: this.props.store.getState().visibilityFilter
+                todos: this.context.store.getState().todos,
+                visibilityFilter: this.context.store.getState().visibilityFilter
             });
         });
     }
@@ -28,7 +32,7 @@ class VisibleTodoList extends Component {
             <TodoList
                 todos={visibleTodos}
                 onTodoClick={(todoId) => {
-                    this.props.store.dispatch({
+                    this.context.store.dispatch({
                         type: 'TOGGLE_TODO',
                         id: todoId
                     });

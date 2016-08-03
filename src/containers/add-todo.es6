@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 let todoID = 0;
 
-const AddTodo = ({
-    store
-}) => {
+const AddTodo = (props, context) => {
     let input;
 
     return (
         <div>
             <input ref={(node) => input = node}/>
             <button onClick={() => {
-                store.dispatch({
+                context.store.dispatch({
                     type: 'ADD_TODO',
                     text: input.value,
                     id: todoID++
@@ -23,6 +21,10 @@ const AddTodo = ({
         </div>
     );
 
+};
+
+AddTodo.contextTypes = {
+    store: PropTypes.object
 };
 
 export default AddTodo;

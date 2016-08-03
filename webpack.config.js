@@ -1,4 +1,5 @@
 module.exports = {
+    devtool: "cheap-inline-module-source-map",
     entry: "./src/index.es6",
     output: {
         filename: "bundle.js"
@@ -10,7 +11,7 @@ module.exports = {
         loaders: [{
                 test: /\.es6$/,
                 exclude: /node_modules/, 
-                loader: "babel" 
+                loader: "babel"
             }
         ]
     }

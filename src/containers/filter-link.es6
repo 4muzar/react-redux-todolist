@@ -1,16 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Link from './../components/link';
 
 class FilterLink extends Component {
 
+    static contextTypes = {
+        store: PropTypes.object
+    };
+
     state = {
-        visibilityFilter: this.props.store.getState().visibilityFilter
+        visibilityFilter: this.context.store.getState().visibilityFilter
     };
 
     componentDidMount() {
-        this.unsubscribe = this.props.store.subscribe(() => {
+        this.unsubscribe = this.context.store.subscribe(() => {
             this.setState({
-                visibilityFilter: this.props.store.getState().visibilityFilter
+                visibilityFilter: this.context.store.getState().visibilityFilter
             });
         });
     }
@@ -28,7 +32,7 @@ class FilterLink extends Component {
             <Link
                 active={active}
                 onClick={() => {
-                    this.props.store.dispatch({
+                    this.context.store.dispatch({
                         type: 'SET_VISIBILITY_FILTER',
                         value: filter
                     });

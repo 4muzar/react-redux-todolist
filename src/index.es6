@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 
@@ -8,15 +8,29 @@ import AddTodo from './containers/add-todo';
 import VisibleTodoList from './containers/visible-todo-list';
 import Footer from './components/Footer';
 
-const TodoApp = ({
-    store
-}) => (
-    <div>
-        <AddTodo store={store} />
-        <VisibleTodoList store={store} />
-        <Footer store={store} />
-    </div>
-);
+class TodoApp extends Component {
+
+    static childContextTypes = {
+        store: PropTypes.object
+    };
+
+    getChildContext() {
+        return {
+            store: this.props.store
+        }
+    }
+
+    render() {
+        return (
+            <div>
+                <AddTodo />
+                <VisibleTodoList />
+                <Footer />
+            </div>
+        );
+    }
+}
+
 
 ReactDOM.render(
     <TodoApp store={createStore(reducers)}/>,
