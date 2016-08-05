@@ -8,7 +8,7 @@ import AddTodo from './containers/add-todo';
 import VisibleTodoList from './containers/visible-todo-list';
 import Footer from './components/Footer';
 
-class TodoApp extends Component {
+class Provider extends Component {
 
     static childContextTypes = {
         store: PropTypes.object
@@ -21,18 +21,24 @@ class TodoApp extends Component {
     }
 
     render() {
-        return (
-            <div>
-                <AddTodo />
-                <VisibleTodoList />
-                <Footer />
-            </div>
-        );
+        return this.props.children;
     }
 }
 
+const TodoApp = () => {
+    return (
+        <div>
+            <AddTodo />
+            <VisibleTodoList />
+            <Footer />
+        </div>
+    );
+};
+
 
 ReactDOM.render(
-    <TodoApp store={createStore(reducers)}/>,
+    <Provider store={createStore(reducers)}>
+        <TodoApp />
+    </Provider>,
     document.querySelector('#root')
 );
