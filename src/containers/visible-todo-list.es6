@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import TodoList from './../components/todo-list';
+import { toggleTodo } from '../actions/todos';
 
 function getVisibleTodos ({todos, visibilityFilter}) {
     return todos.filter((todo) => {
@@ -27,10 +28,7 @@ export default connect(
     (dispatch) => {
         return {
             onTodoClick: (todoId) => {
-                dispatch({
-                    type: 'TOGGLE_TODO',
-                    id: todoId
-                });
+                dispatch(toggleTodo(todoId));
             }
         }
     }
