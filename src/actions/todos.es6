@@ -1,9 +1,7 @@
-let todoID = 0;
-
 export function addTodo(text) {
     return {
         type: 'ADD_TODO',
-        id: todoID++,
+        id: Date.now(),
         text
     }
 }
